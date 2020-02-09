@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>doFree - 免费好用的安全域名</title>
+
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">doFree</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">主页 <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#" tabindex="-1" @click="clock_in()"
+                    >签到</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" tabindex="-1"
+                       aria-disabled="true">{{user_detail.do_bit}} DoBit</a>
+
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+        <div class="col-md-9 p-lg-5 mx-auto my-5">
+            <h1 class="display-4 font-weight-normal">doFree - 免费域名</h1>
+            <p class="lead ">
+                在互联网信息通信的适当，你想申请自己的免费域名吗？不过大多数的顶级域名申请使用，都是只有免费的几天，还需要使用的话，就要注册给钱！现在，免费领取三个域名！</p>
+            <a class="btn btn-outline-secondary" href="#" @click="add_sub_domain()">领取</a>
+        </div>
+        <div class="product-device box-shadow d-none d-md-block"></div>
+
+    </div>
+    <div class="container">
+        <div class="modal fade" id="toastModal" tabindex="-1" role="dialog" aria-labelledby="toastModalModalCenterTitle"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="toastModalModalCenterTitle">提示</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <span v-html="message"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade " id="sslModal" tabindex="-1" role="dialog" aria-labelledby="sslModalCenterTitle"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sslModalCenterTitle">证书信息</h5>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body ">
+                        <span class="text-info">如果证书没有内容，请在相关域名点击 更新->证书</span>
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="ssl_PEM">证书(PEM格式)</label>
+                                    <textarea v-html="select_ssl.pem" class="form-control"
+                                              style="font-size: 16px;resize:none;"
+                                              readonly="readonly" id="ssl_PEM"
+                                              rows="10"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="ssl_KEY">密钥(KEY)</label>
+                                    <textarea v-html="select_ssl.key" class="form-control"
+                                              style="font-size: 16px;resize:none;"
+                                              readonly="readonly" id="ssl_KEY"
+                                              rows="10"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="updateModal" tabindex="-1" role="dialog"
+             aria-labelledby="updateModalModalCenterTitle"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateModalModalCenterTitle">更新记录</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                <span class="input-group-text">{{select_update_item.name}}</span>
+                            </div>
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{select_update_item.record_type}}
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#" @click="select_update_item.record_type='A'">A
+                                    </a>
+                                    <a class="dropdown-item" href="#" @click="select_update_item.record_type='CNAME'">CNAME
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="input-group mt-2">
+                            <input type="text" class="form-control" :value="select_update_item.record"
+                                   id="domain_update_value"
+                                   aria-label="Text input with segmented dropdown button">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" @click="update_register_domain()">更新</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12 justify-content-md-center">
+                <div class="input-group">
+                    <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">.8o0o8.site</span>
+                    </div>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" onclick="alert('目前没有权限注册')">注册</button>
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">下拉</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">.8o0o8.site</a>
+                            <a class="dropdown-item" href="#">.8o0o8.xyz</a>
+                            <a class="dropdown-item" href="#">.8o0o8.top</a>
+                            <div role="separator" class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">.8o0o8.plus</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-4 justify-content-md-center">
+                <div class="table-responsive">
+                    <table class="table  table-borderless text-nowrap">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="w-35"> 域名</th>
+                            <th scope="col" class="w-10"> 到期</th>
+                            <th scope="col" class="w-30"> 记录</th>
+                            <th scope="col" class="w-25"> 操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item, index) in registered_domains.results">
+
+                            <td>
+
+                                <span>{{item.name}}</span>
+                            </td>
+                            <td>
+                                {{item.out_date.split(" ")[0]}}
+                            </td>
+                            <td>
+                                {{item.record_type}} - {{item.record}}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-warning" @click="activate_sub_domain(index)">
+                                        激活
+                                    </button>
+                                    <button type="button" class="btn btn-success" @click="show_ssl_model(index)">证书
+                                    </button>
+
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-info dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            更新
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            <a class="dropdown-item" href="#" @click="ssl_sub_domain(index)">证书</a>
+                                            <a class="dropdown-item" href="#"
+                                               @click="show_update_model(index)">DNS记录</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- General JS Scripts -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/superagent@4.1.0/superagent.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="./js/api.js?v=1"></script>
+
+<!-- JS Libraies -->
+
+<!-- Page Specific JS File -->
+<script>
+
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            user_detail: {
+                "id": 0,
+                "create_date": "",
+                "update_date": "",
+                "token": "",
+                "do_bit": 0,
+                "clock_in_days": 0,
+                "quota": 0,
+                "domain_total": 0,
+                "status": 0,
+                "last_date": "",
+                "extend_json": "{}",
+                "user": null,
+
+            },
+            user_token: null,
+            free_domains: {},
+            message: '',
+            registered_domains: {},
+            select_update_item: {
+                domain_id: 0,
+                name: "",
+                record: "",
+                record_type: "",
+            },
+            select_ssl: {
+                key: "",
+                pem: "",
+            }
+
+        },
+
+        created: function () {
+            this.init();
+
+        },
+        mounted: function () {
+            window.vue = this
+        },
+        methods: {
+            init: function () {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                if (user_token === null) {
+                    that.create_user();
+                } else {
+                    that.get_user_detail();
+                }
+                that.get_public_domains();
+
+            },
+            create_user: function () {
+                let that = this;
+
+                superagent.post(getApiHost() + "/api/userDomainMap/create_session/")
+                    .set('Content-Type', 'application/json')
+                    .end(function (err, res) {
+                        if (err) {
+                            console.log(res.body.detail)
+                        } else {
+                            let user_token = res.body.token;
+                            window.localStorage.setItem("token", user_token);
+                            window.localStorage.setItem("user_id", res.body.id);
+                            that.user_detail = res.body;
+                            that.user_token = user_token;
+                        }
+                    });
+            },
+            get_user_detail: function () {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                let user_id = window.localStorage.getItem("user_id");
+                superagent.post(getApiHost()
+                    + "/api/userDomainMap/"
+                    + user_id
+                    + "/user_detail/")
+                    .set('Content-Type', 'application/json')
+                    .send({token: user_token})
+                    .end(function (err, res) {
+                        if (err) {
+                            console.log(res);
+
+                            if (res.statusCode === 404) {
+                                window.localStorage.removeItem('token');
+                                window.location.href = "";
+                            }
+
+                        } else {
+                            let user_token = res.body.token;
+                            window.localStorage.setItem("token", user_token);
+                            that.user_detail = res.body;
+                            that.user_token = user_token;
+                            that.list_user_register_domains();
+                        }
+                    });
+            },
+            get_public_domains: function () {
+                let that = this;
+                superagent.get(getApiHost()
+                    + "/api/domains/list_domain/")
+                    .set('Content-Type', 'application/json')
+                    .end(function (err, res) {
+                        if (err) {
+                            console.log(res.body.detail)
+                        } else {
+                            that.free_domains = res.body;
+                        }
+                    });
+            },
+            add_sub_domain: function () {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                let user_id = window.localStorage.getItem("user_id");
+                this.show_msg('领取中，请勿刷新网页');
+                if (that.free_domains.results.length <= 0) {
+                    that.show_msg("管理员没有设置可用的域名来进行注册，请联系管理员添加");
+                    return
+                }
+                superagent.post(getApiHost()
+                    + "/api/userDomainMap/"
+                    + user_id
+                    + "/add_sub_domain/")
+                    .set('Content-Type', 'application/json')
+                    .send({'token': user_token, 'domainId': that.free_domains.results[0].id})
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.show_msg(res.body.detail);
+                            that.list_user_register_domains();
+                        }
+                    });
+            },
+            list_user_register_domains: function () {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                superagent.post(getApiHost()
+                    + "/api/subDomains/list_sub_domain/")
+                    .set('Content-Type', 'application/json')
+                    .send({'token': user_token})
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.registered_domains = res.body;
+
+                        }
+                    });
+            },
+            show_msg: function (msg) {
+                this.message = msg;
+                $('#toastModal').modal({'focus': true})
+            },
+            show_update_model: function (index) {
+
+                let domain = this.registered_domains.results[index];
+                this.select_update_item = {
+                    domain_id: domain.id,
+                    name: domain.name,
+                    record: domain.record,
+                    record_type: domain.record_type
+                };
+                $('#updateModal').modal({'focus': true})
+            },
+            update_register_domain: function () {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                that.select_update_item.record = $("#domain_update_value").val();
+                superagent.post(getApiHost()
+                    + "/api/subDomains/" + that.select_update_item.domain_id + "/update_sub_domain/")
+                    .set('Content-Type', 'application/json')
+                    .send({
+                        token: user_token,
+                        record: that.select_update_item.record,
+                        record_type: that.select_update_item.record_type
+                    })
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.show_msg(res.body.detail);
+                            $('#updateModal').modal('hide');
+                            that.list_user_register_domains();
+                        }
+                    });
+            },
+            activate_sub_domain: function (index) {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                let domain = this.registered_domains.results[index];
+                superagent.post(getApiHost()
+                    + "/api/subDomains/" + domain.id + "/activate_sub_domain/")
+                    .set('Content-Type', 'application/json')
+                    .send({token: user_token})
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.show_msg(res.body.detail);
+
+                        }
+                    });
+            },
+            clock_in: function () {
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+
+                let user_id = window.localStorage.getItem("user_id");
+                superagent.post(getApiHost()
+                    + "/api/userDomainMap/" + user_id + "/clock_in/")
+                    .set('Content-Type', 'application/json')
+                    .send({token: user_token})
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.show_msg(res.body.detail);
+
+                        }
+                    });
+            },
+            ssl_sub_domain: function (index) {
+                /*获取证书*/
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                let domain = this.registered_domains.results[index];
+                that.show_msg("获取证书中，整个过程约30s-60s不等，请等待。");
+                superagent.post(getApiHost()
+                    + "/api/subDomains/" + domain.id + "/ssl_sub_domain/")
+                    .set('Content-Type', 'application/json')
+                    .send({token: user_token})
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.select_ssl.key = res.body.ssl_key;
+                            that.select_ssl.pem = res.body.ssl_full_chain;
+                            $('#toastModal').modal('hide');
+                            that.show_ssl_model(-1);
+                            that.list_user_register_domains();
+                        }
+                    });
+            },
+            show_ssl_model: function (index) {
+                if (index < 0) {
+                    $('#sslModal').modal({'focus': true})
+                } else {
+                    let domain = this.registered_domains.results[index];
+                    this.select_ssl.key = domain.ssl_key;
+                    this.select_ssl.pem = domain.ssl_full_chain;
+                    $('#sslModal').modal({'focus': true})
+                }
+            }
+
+        }
+    })
+    ///api/userDomainMap/11/add_sub_domain/
+    ///api/userDomainMap/11/add_sub_domain/
+</script>
+
+
+</body>
+</html>
