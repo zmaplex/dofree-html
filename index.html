@@ -11,7 +11,11 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-82081639-8"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
         gtag('js', new Date());
 
         gtag('config', 'UA-82081639-8');
@@ -47,9 +51,13 @@
     <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
         <div class="col-md-9 p-lg-5 mx-auto my-5">
             <h1 class="display-4 font-weight-normal">doFree - 免费域名</h1>
+            <p></p>
             <p class="lead ">
-                在互联网信息通信的适当，你想申请自己的免费域名吗？不过大多数的顶级域名申请使用，都是只有免费的几天，还需要使用的话，就要注册给钱！现在，免费领取三个域名！</p>
+                匿名、免费、一键领取 Let's encrypt 证书，由全球一流的云服务商 - Cloudflare 提供基础服务。 </p>
+            <p> 点击领取即刻体验，有任何建议请在 <a href="https://github.com/zmaplex/dofree-html">Github</a> 发起 Issues </p>
+
             <a class="btn btn-outline-secondary" href="#" @click="add_sub_domain()">领取</a>
+
         </div>
         <div class="product-device box-shadow d-none d-md-block"></div>
 
@@ -191,6 +199,8 @@
                 </div>
             </div>
             <div class="col-12 mt-4 justify-content-md-center">
+                <div class="d-md-none"><p style="color:red">手机用户请左滑查看更多</p></div>
+
                 <div class="table-responsive">
                     <table class="table  table-borderless text-nowrap">
                         <thead>
