@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
 
 
-
     <link rel="apple-touch-icon" sizes="180x180" href="./img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon/favicon-16x16.png">
@@ -145,8 +144,16 @@
                     <div class="modal-body">
                         <div class="input-group">
                             <div class="input-group-append">
-                                <span class="input-group-text">{{select_update_item.name}}</span>
+
                             </div>
+
+                            <input type="text" class="form-control " :value="select_update_item.name" readonly="readonly">
+
+                        </div>
+
+                        <div class="input-group mt-3">
+                            <input type="text" class="form-control" :value="select_update_item.record"
+                                   id="domain_update_value" aria-label="Text input with dropdown button">
                             <div class="input-group-prepend">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -160,13 +167,9 @@
 
                                 </div>
                             </div>
+                        </div>
 
-                        </div>
-                        <div class="input-group mt-2">
-                            <input type="text" class="form-control" :value="select_update_item.record"
-                                   id="domain_update_value"
-                                   aria-label="Text input with segmented dropdown button">
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" @click="update_register_domain()">更新</button>
