@@ -154,7 +154,8 @@
 
                             </div>
 
-                            <input type="text" class="form-control " :value="select_update_item.name" readonly="readonly">
+                            <input type="text" class="form-control " :value="select_update_item.name"
+                                   readonly="readonly">
 
                         </div>
 
@@ -189,22 +190,23 @@
         <div class="row mt-4">
             <div class="col-12 justify-content-md-center">
                 <div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+                    <input type="text" id="input_register_domain" class="form-control"
+                           aria-label="Text input with segmented dropdown button">
                     <div class="input-group-append">
-                        <span class="input-group-text" id="basic-addon2">.8o0o8.site</span>
+                        <span class="input-group-text" id="basic-addon2">.{{select_domain.name}}</span>
                     </div>
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-outline-secondary" onclick="alert('目前没有权限注册')">注册</button>
+                        <button type="button" class="btn btn-outline-secondary" @click="register_one_domain()">注册</button>
                         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="sr-only">下拉</span>
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">.8o0o8.site</a>
-                            <a class="dropdown-item" href="#">.8o0o8.xyz</a>
-                            <a class="dropdown-item" href="#">.8o0o8.top</a>
-                            <div role="separator" class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">.8o0o8.plus</a>
+                            <a v-for="item in free_domains.results" class="dropdown-item" href="#"
+                               @click="select_register_domain(item.id)">{{item.name}}</a>
+
+                            <!--                            <div role="separator" class="dropdown-divider"></div>-->
+                            <!--                            <a class="dropdown-item" href="#">.8o0o8.plus</a>-->
                         </div>
                     </div>
                 </div>
@@ -301,6 +303,10 @@
                 "user": null,
 
             },
+            select_domain: {
+                id: -1,
+                name: "8o0o8.site"
+            },
             user_token: null,
             free_domains: {},
             message: '',
@@ -392,6 +398,10 @@
                             console.log(res.body.detail)
                         } else {
                             that.free_domains = res.body;
+                            that.select_domain = {
+                                id: res.body.results[0].id,
+                                name: res.body.results[0].name
+                            };
                         }
                     });
             },
@@ -432,6 +442,7 @@
                         } else {
                             that.registered_domains = res.body;
 
+
                         }
                     });
             },
@@ -464,6 +475,7 @@
                     })
                     .end(function (err, res) {
                         if (err) {
+                            $('#updateModal').modal('hide');
                             that.show_msg(res.body.detail);
                         } else {
                             that.show_msg(res.body.detail);
@@ -538,7 +550,41 @@
                     this.select_ssl.pem = domain.ssl_full_chain;
                     $('#sslModal').modal({'focus': true})
                 }
+            },
+            select_register_domain: function (domains_id) {
+                let domains = this.free_domains.results;
+                for (let i = 0; i < domains.length; i++) {
+                    if (domains[i].id === domains_id) {
+                        this.select_domain = {
+                            id: domains[i].id,
+                            name: domains[i].name
+                        };
+                        break;
+                    }
+                }
+
+            },
+            register_one_domain: function () {
+                ///api/userDomainMap/11/register_sub_domain/
+                let that = this;
+                let user_token = window.localStorage.getItem("token");
+                let name = $("#input_register_domain").val();
+                let user_id = window.localStorage.getItem("user_id");
+                let data = {token: user_token, domainId: this.select_domain.id, domainName: name};
+                superagent.post(getApiHost()
+                    + "/api/userDomainMap/" + user_id + "/register_sub_domain/")
+                    .set('Content-Type', 'application/json')
+                    .send(data)
+                    .end(function (err, res) {
+                        if (err) {
+                            that.show_msg(res.body.detail);
+                        } else {
+                            that.show_msg(res.body.detail);
+                            that.list_user_register_domains();
+                        }
+                    });
             }
+
 
         }
     })
